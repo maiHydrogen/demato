@@ -1,10 +1,85 @@
-# demato
+# Demato
 
-A new Flutter project.
+- Demo + Zomato = demato.
+- A mini Zomato Platform based Flutter with BLoC state management.
+- This project is intended for learning purpose only and was made as a part of Flutter assesment test.
+
+---
+
+## Architecture Overview
+
+Following flowchart shows the base architecture for this project using BLoC.
+
+```
+lib/
+├── core/
+│   ├── constants/
+│   │   ├── app_colors.dart
+│   │   ├── app_strings.dart
+│   │   └── app_routes.dart
+│   ├── errors/
+│   │   └── exceptions.dart
+│   └── utils/
+│       └── validators.dart
+├── data/
+│   ├── models/
+│   │   ├── user_model.dart
+│   │   ├── restaurant_model.dart
+│   │   ├── menu_item_model.dart
+│   │   └── order_model.dart
+│   ├── repositories/
+│   │   └── user_repository_impl.dart
+│   └── datasources/
+│       ├── local/
+│       │   └── shared_prefs_helper.dart
+│       └── remote/
+│           └── mock_data_source.dart
+├── domain/
+│   ├── entities/
+│   │   ├── user.dart
+│   │   ├── restaurant.dart
+│   │   ├── menu_item.dart
+│   │   └── order.dart
+│   ├── repositories/
+│   │   └── user_repository.dart
+│   └── usecases/
+│       ├── login_user.dart
+│       └── get_restaurants.dart
+├── presentation/
+│   ├── bloc/
+│   │   ├── auth/
+│   │   ├── restaurant_list/
+│   │   ├── menu/
+│   │   ├── cart/
+│   │   └── order/
+│   ├── pages/
+│   │   ├── auth/
+│   │   ├── home/
+│   │   ├── restaurant/
+│   │   ├── cart/
+│   │   └── orders/
+│   └── widgets/
+│       └── common/
+└── main.dart
+```
+---
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+For setting up this project on windows follow the folloeing steps - 
+- Step 1 - Clone this repository to your local directory
+  ```
+  $ git clone https://github.com/maiHydrogen/demato.git
+  ```
+- Step 2 - open the project with any Text Editor i.e. VS Code or Android Studio and run the following commands in Terminal 
+  ```
+  $ flutter pub get
+  $ flutter run
+  ```
+- Voila!!! You are good to go with the Setup.
+
+- Flutter Setup -
+  Follow the intructions given [here](https://docs.flutter.dev/get-started/install)
 
 A few resources to get you started if this is your first Flutter project:
 
