@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/auth/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -131,12 +133,12 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         }
                       },
-                      child: Text(_isSignup ? 'Sign Up' : 'Login'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         minimumSize: Size(double.infinity, 48),
                       ),
+                      child: Text(_isSignup ? 'Sign Up' : 'Login'),
                     );
                   },
                 ),

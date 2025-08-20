@@ -1,5 +1,3 @@
-
-
 import '../../model/cart_item_model.dart';
 import '../../model/menu_item_model.dart';
 import '../../model/order_model.dart';
@@ -167,10 +165,9 @@ class MockDataSource {
     }
   }
 
+  // Fixed method - access individual menu items by index
   static List<OrderModel> getMockOrders(String userId) {
     final restaurants = getRestaurants();
-    final pizzaMenuItems = getMenuItems('1'); // Get Pizza Palace menu items
-    final burgerMenuItems = getMenuItems('2'); // Get Burger Barn menu items
 
     return [
       OrderModel(
@@ -178,8 +175,31 @@ class MockDataSource {
         userId: userId,
         restaurant: restaurants[0], // Pizza Palace
         items: [
-          CartItemModel.fromMenuItem(pizzaMenuItems as MenuItemModel, 2), // Margherita Pizza x2
-          CartItemModel.fromMenuItem(pizzaMenuItems[1], 1), // Pepperoni Pizza x1
+          // Get individual items from the menu list
+          CartItemModel.fromMenuItem(
+            MenuItemModel(
+              id: '1',
+              name: 'Margherita Pizza',
+              description: 'Classic pizza with tomato sauce, mozzarella, and basil',
+              price: 12.99,
+              image: 'https://via.placeholder.com/200x150?text=Margherita',
+              category: 'Pizza',
+              isVeg: true,
+            ),
+            2, // quantity
+          ),
+          CartItemModel.fromMenuItem(
+            MenuItemModel(
+              id: '2',
+              name: 'Pepperoni Pizza',
+              description: 'Pizza with pepperoni and mozzarella cheese',
+              price: 14.99,
+              image: 'https://via.placeholder.com/200x150?text=Pepperoni',
+              category: 'Pizza',
+              isVeg: false,
+            ),
+            1, // quantity
+          ),
         ],
         subtotal: 40.97,
         deliveryFee: 2.99,
@@ -193,7 +213,18 @@ class MockDataSource {
         userId: userId,
         restaurant: restaurants[1], // Burger Barn
         items: [
-          CartItemModel.fromMenuItem(burgerMenuItems as MenuItemModel, 1), // Classic Burger x1
+          CartItemModel.fromMenuItem(
+            MenuItemModel(
+              id: '5',
+              name: 'Classic Burger',
+              description: 'Beef patty with lettuce, tomato, onion, and special sauce',
+              price: 8.99,
+              image: 'https://via.placeholder.com/200x150?text=Classic+Burger',
+              category: 'Burgers',
+              isVeg: false,
+            ),
+            1, // quantity
+          ),
         ],
         subtotal: 8.99,
         deliveryFee: 1.99,
@@ -203,5 +234,21 @@ class MockDataSource {
         deliveryAddress: '123 Main St, City, State',
       ),
     ];
+  }
+
+  // Helper method to get a specific menu item by ID (optional)
+  static MenuItemModel? getMenuItemById(String itemId) {
+    // Get all menu items from all restaurants
+    final allMenuItems = [
+      ...getMenuItems('1'),
+      ...getMenuItems('2'),
+      ...getMenuItems('3'),
+    ];
+
+    try {
+      return allMenuItems.firstWhere((item) => item.id == itemId);
+    } catch (e) {
+      return null;
+    }
   }
 }
