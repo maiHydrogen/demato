@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/model/cart_item_model.dart';
+import '../../../data/model/order_model.dart';
 import '../../bloc/cart/cart_bloc.dart';
-import '../restaurant/homepage.dart';
-
+import '../../bloc/history/order_history_bloc.dart';
+import '../history/order_history_page.dart';
+import '../home/homepage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../bloc/cart/cart_bloc.dart';
+import '../../bloc/auth/auth_bloc.dart';
 
 class OrderConfirmationPage extends StatelessWidget {
-  final List<CartItemModel> cartItems;
-  final double total;
+  final OrderModel order;
 
   const OrderConfirmationPage({
     super.key,
-    required this.cartItems,
-    required this.total,
+    required this.order,
   });
 
   @override
@@ -35,7 +39,7 @@ class OrderConfirmationPage extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.green[100],
+                  color: Colors.green,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -75,14 +79,23 @@ class OrderConfirmationPage extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey),
                 ),
                 child: Column(
                   children: [
                     Text(
-                      'Order Total',
+                      'Order #${order.id.substring(0, 8).toUpperCase()}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      order.restaurant.name,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -90,7 +103,7 @@ class OrderConfirmationPage extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      '\$${total.toStringAsFixed(2)}',
+                      '\$${order.total.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -99,7 +112,7 @@ class OrderConfirmationPage extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      '${cartItems.length} items',
+                      '${order.items.length} items',
                       style: TextStyle(
                         color: Colors.grey[600],
                       ),
@@ -141,12 +154,16 @@ class OrderConfirmationPage extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: () {
-                        // Navigate to order tracking (placeholder)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Order tracking coming soon!'),
-                            backgroundColor: Colors.blue,
-                          ),
+                        // Refresh order history and navigate to orders page
+                        final authState = context.read<AuthBloc>().state;
+                        if (authState is AuthAuthenticated) {
+                          context.read<OrderHistoryBloc>().add(
+                            RefreshOrderHistory(userId: authState.userId),
+                          );
+                        }
+
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => OrderHistoryPage()),
                         );
                       },
                       style: OutlinedButton.styleFrom(
@@ -155,7 +172,7 @@ class OrderConfirmationPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 16),
                         //fontSize: 16,
                       ),
-                      child: Text('Track Order'),
+                      child: Text('View My Orders'),
                     ),
                   ),
                 ],

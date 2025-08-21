@@ -1,8 +1,8 @@
 # Demato
 
-- Demo + Zomato = demato.
+- Demo + Zomato = Demato.
 - A mini Zomato Platform based Flutter with BLoC state management.
-- This project is intended for learning purpose only and was made as a part of Flutter assesment test.
+- This project is intended for learning purpose only and was made as a part of Flutter assessment test.
 
 ---
 
@@ -14,13 +14,8 @@ Following flowchart shows the base architecture for this project using BLoC.
 lib/
 ├── core/
 │   ├── constants/
-│   │   ├── app_colors.dart
-│   │   ├── app_strings.dart
-│   │   └── app_routes.dart
 │   ├── errors/
-│   │   └── exceptions.dart
 │   └── utils/
-│       └── validators.dart
 ├── data/
 │   ├── models/
 │   │   ├── user_model.dart
@@ -59,14 +54,13 @@ lib/
 │   │   ├── cart/
 │   │   └── orders/
 │   └── widgets/
-│       └── common/
 └── main.dart
 ```
 ---
 
 ## Getting Started
 
-For setting up this project on windows follow the folloeing steps - 
+For setting up this project on windows follow the following steps - 
 - Step 1 - Clone this repository to your local directory
   ```
   $ git clone https://github.com/maiHydrogen/demato.git
@@ -79,7 +73,7 @@ For setting up this project on windows follow the folloeing steps -
 - Voila!!! You are good to go with the Setup.
 
 - Flutter Setup -
-  Follow the intructions given [here](https://docs.flutter.dev/get-started/install)
+  Follow the instructions given [here](https://docs.flutter.dev/get-started/install)
 
 A few resources to get you started if this is your first Flutter project:
 
