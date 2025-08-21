@@ -15,18 +15,22 @@ lib/
 ├── core/
 │   ├── constants/
 │   ├── errors/
+│   │   └── exceptions.dart
 │   └── utils/
+│       ├── auth_guard.dart
+│       └── validators.dart
 ├── data/
 │   ├── models/
 │   │   ├── user_model.dart
+│   │   ├── cart_item_model.dart
 │   │   ├── restaurant_model.dart
 │   │   ├── menu_item_model.dart
 │   │   └── order_model.dart
 │   ├── repositories/
-│   │   └── user_repository_impl.dart
 │   └── datasources/
 │       ├── local/
-│       │   └── shared_prefs_helper.dart
+│       │   ├── user_storage.dart
+│       │   └── order_storage.dart
 │       └── remote/
 │           └── mock_data_source.dart
 ├── domain/
@@ -36,24 +40,28 @@ lib/
 │   │   ├── menu_item.dart
 │   │   └── order.dart
 │   ├── repositories/
-│   │   └── user_repository.dart
 │   └── usecases/
-│       ├── login_user.dart
-│       └── get_restaurants.dart
 ├── presentation/
 │   ├── bloc/
 │   │   ├── auth/
-│   │   ├── restaurant_list/
+│   │   ├── restaurant/
+│   │   ├── history/
 │   │   ├── menu/
 │   │   ├── cart/
 │   │   └── order/
 │   ├── pages/
 │   │   ├── auth/
 │   │   ├── home/
-│   │   ├── restaurant/
+│   │   ├── history/
+│   │   ├── menu/
 │   │   ├── cart/
-│   │   └── orders/
+│   │   └── order/
 │   └── widgets/
+│       ├── cart_item_widget.dart
+│       ├── menu_item_widget.dart
+│       ├── order_card.dart
+│       ├── restaurant_card.dart
+│       └── search_bar.dart
 └── main.dart
 ```
 ---

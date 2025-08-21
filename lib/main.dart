@@ -3,12 +3,11 @@ import 'package:demato/presentation/bloc/restaurant/restaurant_list_bloc.dart';
 import 'package:demato/presentation/pages/home/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/utilities/auth_guard.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
 import 'presentation/bloc/cart/cart_bloc.dart';
 import 'presentation/bloc/menu/menu_bloc.dart';
 import 'presentation/bloc/order/order_bloc.dart';
-import 'presentation/pages/auth/login_page.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -41,23 +40,14 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Demato',
+        title: 'Mini Zomato',
         theme: ThemeData(
           primarySwatch: Colors.red,
           useMaterial3: true,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthAuthenticated) {
-              return HomePage();
-            } else if (state is AuthUnauthenticated) {
-              return LoginPage();
-            } else {
-              return Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-          },
+        home: AuthGuard(
+          child: HomePage(),
         ),
         debugShowCheckedModeBanner: false,
       ),

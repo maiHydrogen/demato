@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utilities/validators.dart';
 import '../../bloc/auth/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,146 +14,249 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isSignup = false;
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  bool _isSignup = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isSignup ? 'Sign Up' : 'Login'),
+        title: Text(_isSignup ? 'Create Account' : 'Welcome Back'),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state is AuthAuthenticated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Welcome, ${state.userName}!'),
+                backgroundColor: Colors.green,
+              ),
             );
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (_isSignup)
+                // App Logo/Title
+                Container(
+                  margin: EdgeInsets.only(bottom: 32),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.restaurant,
+                        size: 80,
+                        color: Colors.red,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Demato',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        _isSignup ? 'Create your account' : 'Sign in to continue',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Name Field (Signup only)
+                if (_isSignup) ...[
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Name',
-                      border: OutlineInputBorder(),
+                      labelText: 'Full Name',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
+                    validator: Validators.validateName,
+                    textInputAction: TextInputAction.next,
                   ),
-                if (_isSignup) SizedBox(height: 16),
+                  SizedBox(height: 16),
+                ],
+
+                // Email Field
                 TextFormField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
+                    labelText: 'Email Address',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
+                  validator: Validators.validateEmail,
+                  textInputAction: TextInputAction.next,
                 ),
                 SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your password';
-                    }
-                    if (value!.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                if (_isSignup) SizedBox(height: 16),
-                if (_isSignup)
+
+                // Phone Field (Signup only)
+                if (_isSignup) ...[
                   TextFormField(
                     controller: _phoneController,
+                    keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
-                      labelText: 'Phone',
-                      border: OutlineInputBorder(),
+                      labelText: 'Phone Number',
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
+                    validator: Validators.validatePhone,
+                    textInputAction: TextInputAction.next,
                   ),
-                SizedBox(height: 24),
+                  SizedBox(height: 16),
+                ],
+
+                // Password Field
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: Validators.validatePassword,
+                  textInputAction: _isSignup ? TextInputAction.next : TextInputAction.done,
+                  onFieldSubmitted: _isSignup ? null : (value) => _handleSubmit(),
+                ),
+                SizedBox(height: 16),
+
+                // Confirm Password Field (Signup only)
+                if (_isSignup) ...[
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    validator: (value) => Validators.validateConfirmPassword(
+                      _passwordController.text,
+                      value,
+                    ),
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (value) => _handleSubmit(),
+                  ),
+                  SizedBox(height: 24),
+                ],
+
+                SizedBox(height: _isSignup ? 8 : 24),
+
+                // Submit Button
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
-                    if (state is AuthLoading) {
-                      return CircularProgressIndicator();
-                    }
-
                     return ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          if (_isSignup) {
-                            context.read<AuthBloc>().add(
-                              SignupRequested(
-                                name: _nameController.text,
-                                email: _emailController.text,
-                                password: _passwordController.text,
-                                phone: _phoneController.text,
-                              ),
-                            );
-                          } else {
-                            context.read<AuthBloc>().add(
-                              LoginRequested(
-                                email: _emailController.text,
-                                password: _passwordController.text,
-                              ),
-                            );
-                          }
-                        }
-                      },
+                      onPressed: state is AuthLoading ? null : _handleSubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 48),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: Text(_isSignup ? 'Sign Up' : 'Login'),
+                      child: state is AuthLoading
+                          ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Text(_isSignup ? 'Creating Account...' : 'Signing In...'),
+                        ],
+                      )
+                          : Text(
+                        _isSignup ? 'Create Account' : 'Sign In',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     );
                   },
                 ),
+
                 SizedBox(height: 16),
+
+                // Switch between Login/Signup
                 TextButton(
                   onPressed: () {
                     setState(() {
                       _isSignup = !_isSignup;
                     });
+                    _clearForm();
                   },
-                  child: Text(
-                    _isSignup
-                        ? 'Already have an account? Login'
-                        : 'Don\'t have an account? Sign Up',
+                  child: Text.rich(
+                    TextSpan(
+                      text: _isSignup
+                          ? 'Already have an account? '
+                          : 'Don\'t have an account? ',
+                      style: TextStyle(color: Colors.grey[600]),
+                      children: [
+                        TextSpan(
+                          text: _isSignup ? 'Sign In' : 'Sign Up',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -163,12 +267,43 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _handleSubmit() {
+    if (_formKey.currentState!.validate()) {
+      if (_isSignup) {
+        context.read<AuthBloc>().add(
+          SignupRequested(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            phone: _phoneController.text.trim(),
+          ),
+        );
+      } else {
+        context.read<AuthBloc>().add(
+          LoginRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+        );
+      }
+    }
+  }
+
+  void _clearForm() {
+    _nameController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    _phoneController.clear();
+    _confirmPasswordController.clear();
+  }
+
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _nameController.dispose();
     _phoneController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }

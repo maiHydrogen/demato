@@ -1,31 +1,52 @@
+import 'dart:convert';
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/user.dart';
 
-class User extends Equatable {
-  final String id;
-  final String name;
-  final String email;
-  final String phone;
-  final String? password; // For demo purposes - in real app, never store plain passwords
-
-  const User({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.password,
+class UserModel extends User {
+  const UserModel({
+    required super.id,
+    required super.name,
+    required super.email,
+    required super.phone,
+    super.password,
   });
 
-  @override
-  List<Object?> get props => [id, name, email, phone];
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      password: json['password'], // For demo only
+    );
+  }
 
-  User copyWith({
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'password': password, // For demo only
+    };
+  }
+
+  String toJsonString() {
+    return jsonEncode(toJson());
+  }
+
+  static UserModel fromJsonString(String jsonString) {
+    return UserModel.fromJson(jsonDecode(jsonString));
+  }
+
+  UserModel copyWith({
     String? id,
     String? name,
     String? email,
     String? phone,
     String? password,
   }) {
-    return User(
+    return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,

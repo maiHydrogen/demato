@@ -1,4 +1,4 @@
-import 'package:demato/presentation/pages/restaurant/restaurant_detail_page.dart';
+import 'package:demato/presentation/pages/menu/restaurant_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/auth/auth_bloc.dart';
@@ -30,7 +30,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mini Zomato'),
+        title: Text('Demato'),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         actions: [
@@ -158,14 +158,43 @@ class HomePageState extends State<HomePage> {
               if (authState is AuthAuthenticated) {
                 return Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'Hello ${authState.userName}! 👋',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.red[50]!, Colors.red[100]!],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.waving_hand, color: Colors.orange, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Hello, ${authState.userName}!',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'What would you like to eat today?',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }
@@ -313,20 +342,44 @@ class HomePageState extends State<HomePage> {
           builder: (context, authState) {
             if (authState is AuthAuthenticated) {
               return AlertDialog(
-                title: Text('Profile'),
+                title: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.red,
+                      child: Text(
+                        authState.userName[0].toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text('Profile'),
+                  ],
+                ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Name: ${authState.userName}'),
-                    SizedBox(height: 8),
-                    Text('User ID: ${authState.userId}'),
+                    _buildProfileRow(Icons.person, 'Name', authState.userName),
+                    _buildProfileRow(Icons.email, 'Email', authState.userEmail),
+                    _buildProfileRow(Icons.phone, 'Phone', authState.userPhone),
+                    _buildProfileRow(Icons.tag, 'User ID', authState.userId.substring(0, 8).toUpperCase()),
                   ],
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text('Close'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _showEditProfileDialog(context);
+                    },
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: Text('Edit Profile'),
                   ),
                 ],
               );
@@ -336,6 +389,96 @@ class HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Widget _buildProfileRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.grey[600]),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final nameController = TextEditingController(text: authState.userName);
+      final phoneController = TextEditingController(text: authState.userPhone);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Edit Profile'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    UpdateUserProfile(
+                      name: nameController.text.trim(),
+                      phone: phoneController.text.trim(),
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void _showLogoutDialog(BuildContext context) {
